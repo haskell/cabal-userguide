@@ -22,7 +22,7 @@
               md-format = {
                 enable = true;
                 name = "Format Markdown";
-                entry = "${pkgs.python39Packages.mdformat}/bin";
+                entry = "${pkgs.python39Packages.mdformat}/bin/mdformat";
                 files = "\\.md$";
                 language = "system";
               };

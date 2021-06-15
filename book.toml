@@ -1,0 +1,12 @@
+[book]
+title = "Cabal User Guide"
+authors = ["Jonathan Lorimer"]
+description = "A user friendly guide on how to get up and running with Cabal"
+language = "en"
+multilingual = false
+src = "src"
+
+[output.html]
+git-repository-url = "https://github.com/haskell/cabal-userguide"
+git-repository-icon = "fa-github"
+edit-url-template = "https://github.com/haskell/cabal-userguide/edit/main/{path}"
