@@ -1,0 +1,1 @@
+# Generating documentation with haddock
