@@ -10,17 +10,17 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: "3.9"
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
 
-    - name: Install dependencies
-      run: pip install mdformat
+      - name: Install dependencies
+        run: pip install mdformat
 
-    - name: Run Format
-      run: mdformat . --check
+      - name: Run Format
+        run: mdformat . --check
   deploy:
     needs: format
     runs-on: ubuntu-latest
@@ -30,7 +30,7 @@ jobs:
       - name: Setup mdBook
         uses: peaceiris/actions-mdbook@v1
         with:
-          mdbook-version: '0.4.9'
+          mdbook-version: "0.4.9"
 
       - run: mdbook build
 

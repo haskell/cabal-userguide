@@ -18,23 +18,12 @@
         checks = {
           pre-commit-check = pre-commit-hooks.lib.${system}.run {
             src = ./.;
-            hooks = {
-              md-format = {
-                enable = true;
-                name = "Format Markdown";
-                entry = "${pkgs.python39Packages.mdformat}/bin/mdformat";
-                files = "\\.md$";
-                language = "system";
-              };
-            };
+            hooks.prettier.enable = true;
           };
         };
         devShell = pkgs.mkShell {
           inherit (self.checks.${system}.pre-commit-check) shellHook;
-          buildInputs = with pkgs; [
-            mdbook
-            python39Packages.mdformat
-          ];
+          buildInputs = with pkgs; [ mdbook nodePackages.prettier ];
         };
       }
     );
