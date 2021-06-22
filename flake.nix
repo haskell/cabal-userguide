@@ -23,7 +23,7 @@
               custom-prettier = {
                 enable = true;
                 name = "Custom Prettier";
-                entry = "${pkgs.nodePackages.prettier} --write --list-different --ignore-unknown --config=\".prettierrc\"";
+                entry = "${pkgs.nodePackages.prettier}/bin/prettier --write --list-different --ignore-unknown --config=\".prettierrc\"";
                 files = "\\.(md|yml|yaml)$";
                 excludes = [ ".pre-commit-config.yaml" ];
                 language = "system";
