@@ -11,13 +11,14 @@
 
 - [Installing cabal + GHC](./new_to_cabal/01_installing_cabal_and_ghc.md)
 - [Cabal repl](./new_to_cabal/02_cabal_repl.md)
-- [Initializing a cabal repo](./new_to_cabal/03_initializing_a_cabal_repo.md)
-- [Basic package properties](./new_to_cabal/04_basic_package_properties.md)
-- [First cabal library](./new_to_cabal/05_first_cabal_library.md)
-- [First cabal executable](./new_to_cabal/06_first_cabal_executable.md)
-- [Combining a library and an executable](./new_to_cabal/07_combining_a_library_and_an_executable.md)
-- [Adding dependencies](./new_to_cabal/08_adding_dependencies.md)
-- [Running your code](./new_to_cabal/09_running_your_code.md)
+- [Cabal env](./new_to_cabal/03_cabal_env.md)
+- [Initializing a cabal repo](./new_to_cabal/04_initializing_a_cabal_repo.md)
+- [Basic package properties](./new_to_cabal/05_basic_package_properties.md)
+- [First cabal library](./new_to_cabal/06_first_cabal_library.md)
+- [First cabal executable](./new_to_cabal/07_first_cabal_executable.md)
+- [Combining a library and an executable](./new_to_cabal/08_combining_a_library_and_an_executable.md)
+- [Adding dependencies](./new_to_cabal/09_adding_dependencies.md)
+- [Running your code](./new_to_cabal/10_running_your_code.md)
 
 # Leveling Up
 
