@@ -11,14 +11,24 @@
     };
   };
 
-  outputs = { self, nixpkgs, pre-commit-hooks, flake-utils, flake-compat}:
+  outputs = { self, nixpkgs, pre-commit-hooks, flake-utils, flake-compat }:
     flake-utils.lib.eachDefaultSystem (system:
       let pkgs = nixpkgs.legacyPackages.${system}; in
       {
         checks = {
           pre-commit-check = pre-commit-hooks.lib.${system}.run {
             src = ./.;
-            hooks.prettier.enable = true;
+            hooks = {
+              nixpkgs-fmt.enable = true;
+              custom-prettier = {
+                enable = true;
+                name = "Custom Prettier";
+                entry = "${pkgs.nodePackages.prettier} --write --list-different --ignore-unknown --config=\".prettierrc\"";
+                files = "\\.(md|yml|yaml)$";
+                excludes = [ ".pre-commit-config.yaml" ];
+                language = "system";
+              };
+            };
           };
         };
         devShell = pkgs.mkShell {
