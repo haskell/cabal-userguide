@@ -15,7 +15,7 @@ jobs:
         uses: creyD/prettier_action@v3.3
         with:
           dry: true
-          prettier_options: --check **/*.{yaml,yml,md}
+          prettier_options: --write --list-different **/*.{yaml,yml,md}
   deploy:
     needs: format
     runs-on: ubuntu-latest
