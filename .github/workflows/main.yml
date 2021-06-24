@@ -10,27 +10,22 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: "3.9"
-
-    - name: Install dependencies
-      run: pip install mdformat
-
-    - name: Run Format
-      run: mdformat . --check
+      - uses: actions/checkout@v2
+      - name: Prettier Check
+        uses: creyD/prettier_action@v3.3
+        with:
+          dry: true
+          prettier_options: --write --list-different **/*.{yaml,yml,md}
   deploy:
     needs: format
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup mdBook
+      - name: Setup mdbook
         uses: peaceiris/actions-mdbook@v1
         with:
-          mdbook-version: '0.4.9'
+          mdbook-version: "0.4.9"
 
       - run: mdbook build
 
