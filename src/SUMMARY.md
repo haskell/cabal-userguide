@@ -2,7 +2,7 @@
 
 # Preamble
 
-- [What do we mean when we say cabal?](./preamble/01_what_do_we_mean_when_we_say_cabal.md) (`cabal-install`, `Cabal`, `cabal.project`, and `.cabal` files)
+- [What do we mean when we say cabal?](./preamble/01_what_do_we_mean_when_we_say_cabal.md)
 - [What is a module and a package?](./preamble/02_what_is_a_module_and_a_package.md)
 - [What is hackage?](./preamble/03_what_is_hackage.md)
 - [How to install software with cabal-install](./preamble/04_how_to_install_software_with_cabal-install.md)
@@ -16,9 +16,7 @@
 - [Basic package properties](./new_to_cabal/05_basic_package_properties.md)
 - [First cabal library](./new_to_cabal/06_first_cabal_library.md)
 - [First cabal executable](./new_to_cabal/07_first_cabal_executable.md)
-- [Combining a library and an executable](./new_to_cabal/08_combining_a_library_and_an_executable.md)
-- [Adding dependencies](./new_to_cabal/09_adding_dependencies.md)
-- [Running your code](./new_to_cabal/10_running_your_code.md)
+- [Adding dependencies](./new_to_cabal/08_adding_dependencies.md)
 
 # Leveling Up
 
