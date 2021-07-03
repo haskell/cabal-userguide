@@ -4,7 +4,7 @@
 
 All dependencies are provided via nix. This project is defined as a flake so you
 can use `nix develop` to enter a shell if you have experimental features
-enabled. There is also `flake-compat` setup so a regular `nix shell` should work
+enabled. There is also `flake-compat` setup so a regular `nix-shell` should work
 if you don't want to use experimental features.
 
 If you don't want to use nix you can install these dependencies by themselves.
