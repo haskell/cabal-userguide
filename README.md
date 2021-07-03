@@ -21,6 +21,10 @@ are not correctly formatted!
 If you want to install nix please follow the instructions
 [here](https://nixos.org/download.html)
 
+If you want to enable experimental features (the `nix` command) you can find
+documentation about getting that setup
+[here](https://nixos.wiki/wiki/Nix_command)
+
 ## Running Locally
 
 This project is built with mdbook and they have
