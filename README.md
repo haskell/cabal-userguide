@@ -10,8 +10,8 @@ if you don't want to use experimental features.
 If you don't want to use nix you can install these dependencies by themselves.
 It should be noted that the pre-commit-hooks are setup using nix, so if you want
 to not use nix it might be convenient to setup your own commit hooks, or you can
-run mdformat on your own. CI will fail if markdown files are not correctly
-formatted!
+run `prettier --write "./**/*.md"` on your own. CI will fail if markdown files
+are not correctly formatted!
 
 - [mdbook](https://rust-lang.github.io/mdBook/cli/index.html)
 - [prettier](https://prettier.io/)
