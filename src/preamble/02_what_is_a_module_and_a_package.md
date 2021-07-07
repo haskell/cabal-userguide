@@ -1,42 +1,55 @@
-# What is a module and a package?
+# What is a module, a component, and a package?
 
 ## TL;DR
 
-A **module** is a unit of code defined by GHC and combined by Cabal to create
-packages. A **package** is either a library (a re-usable collection of modules),
-or an executable (an application that is the combination of one or more modules
-into a binary executable). A test suite is kind of like a package, in the sense
-that it is specified separately at the top-level of a `<project-name>.cabal`
-file, and is built up out of modules. However, it is different in the sense that
-it is usually not exposed and distributed. Broadly speaking, the point of Cabal
-is to define packages.
+A **module** is a unit of code defined by GHC and combined by cabal to create a
+**component**. A **package** is a cabal project, usually denoted by a
+`<project-name>.cabal` file in the root directory. A **component** is either a
+library (a re-usable collection of modules), or an executable (an application
+that is the combination of one or more modules into a binary executable). A test
+suite is also a **component**, however it is slightly different from the others
+since it is usually just run on other modules exported by other components
+within the package. A **unit** is just a compiled **component**, which has some
+implications for GHC, but isn't really of concern to us as users of cabal.
+Broadly speaking, the purpose of cabal is to define a package. Creating a
+package entails retrieving other packages that your package depends on,
+identifying all of the modules for each component within your package, and then
+marshalling all of these internal and external dependencies into components.
+
+> Note: there are ongoing efforts to standardize this terminology. You can read
+> more about this terminology
+> [here](https://gitlab.haskell.org/ghc/ghc/-/wikis/commentary/compiler/units#background),
+> it might be interesting since it explains things from GHC's perspective!
 
 ## What is a module?
 
 At its most basic, a module is a namespace for collecting types, functions, and
 typeclasses (referred to as entities). Modules are a common feature in most
 languages, and the ML family of languages in particular are known for having a
-very robust module system (OCaml has full blown ML modules, and Haskell has
-partial support for them with [backpack](../getting_fancy/10_backpack.md) but
-that's a slightly more advanced topic). Unlike ML modules, Haskell modules are
-not first class (they cannot be passed around as values). Despite this, Haskell
-modules are very feature-full, they can export all or some of their entities,
-and imports of modules can: be qualified with a prefix, explicitly describe a
-few entities to bring into scope, or explicitly hide a few entities and bring
-the rest into scope. If you want to learn more about Haskell modules and their
-syntax, then the
+very robust
+[module system](https://jozefg.bitbucket.io/posts/2017-01-08-modules.html)
+(OCaml has full blown ML modules, and Haskell has partial support for them with
+[backpack](../getting_fancy/10_backpack.md) but that's a slightly more advanced
+topic). Unlike ML modules, Haskell modules are not first class (they cannot be
+passed around as values), and in general Haskell modules are bound to a single
+file. Despite this, Haskell modules are very feature-full, they can export all
+or some of their entities, and imports of modules can: be qualified with a
+prefix, explicitly describe a few entities to bring into scope, or explicitly
+hide a few entities and bring the rest into scope. If you want to learn more
+about Haskell modules and their syntax, then the
 [haskell2010 report](https://www.haskell.org/onlinereport/haskell2010/haskellch5.html)
 is a good place to start.
 
-The humble module, at its core, is just a namespace, but it provides powerful
-practical capabilities.
+#### What is the impact of separating into Modules?
 
 Modules can be used as an abstraction layer, by limiting what they export. In
 this way one can create opaque types.
 
 ```haskell
 module Money (
+  -- Notice that the constructor of PositiveDollar is not exported below
   PositiveDollar,
+  -- PositiveDollar(..), <- this would export the constructors as well
   mkPositiveDollar
 ) where
 
@@ -57,11 +70,13 @@ logical and manageable pieces; an 80 line file is much more approachable, and
 easy to take in at a glance, than a 1000 line file.
 
 Module separation can also impact compile times. Each module keeps track of the
-fingerprint (A unique identifier, usually the hash of the contents of the file)
-of the modules it depends on. If you change a module that is depended upon by
-other modules, you will need to recompile everything downstream of your change.
-This means that very large modules, that are imported frequently, can trigger
-massive recompilations.
+fingerprint (A unique identifier, in new versions of GHC it is a hash of the
+contents of the file) of the modules it depends on. If you change a module that
+is depended upon by other modules, you will need to recompile everything
+downstream of your change. This means that very large modules, that are imported
+frequently, can trigger massive recompilations.
+
+#### How does Module recompilation work?
 
 ```
 
@@ -113,7 +128,7 @@ For a deeper exposition of module recompilation the
 are a great resource.
 
 A crucial point to understand here is that `GHC` is responsible for this
-recompilation logic, and modules capabilities are defined in the Haskell
+recompilation logic, and a modules capabilities are defined in the Haskell
 language specification. Why, as cabal users, is it important for us to
 understand the module dependency graph, and how to use modules in general?
 
@@ -124,7 +139,7 @@ The answer is two-fold:
 2. The module is the smallest unit of concern within cabal, and therefore it is
    worthwhile to understand its meaning, use cases, and impact on our codebase.
 
-## What is a module to Cabal?
+## Components - What does a module mean to cabal?
 
 As a user of cabal we are trying to accomplish a couple of things, we are trying
 to manage the code that we depend on, and we are trying to package the code that
@@ -142,32 +157,67 @@ machinery which we would prefer to keep hidden, and only expose the clean
 external api. All of these use cases can be expressed in cabal, but they require
 us to tell cabal exactly what we want to do.
 
-You don't need to know what these are now, but over the course of this user
-guide you will see configuration keys like `exposed-modules`, `other-modules`,
-`virtual-modules`, `test-module`, and even `main-is` which describes the
-entrypoint module for an executable. This information is used to communicate to
-Cabal how to treat each module in the context of a `package`.
+These collections of modules which are aggregated and exposed are mediated by a
+construct called a **component**. Components are represented by top level keys
+within a `.cabal` file. These are the kinds of components that you can define
+`library`, `executable`, and `test-suite`. A **library** exposes several modules
+which are intended to be used by other packages, an **executable** produces a
+compiled binary that can be executed, a **test suite** is a program that can be
+invoked like an executable but it generally just tests code that is internal to
+the package.
 
-Hopefully now its clear why you would want a bunch of different modules, and why
-you need to enumerate them for cabal!
+> Note: each of these components will receive individual treatment later on in
+> the guide. If you are interested to take a peek now you can find them here:
+> [library](../new_to_cabal/06_first_cabal_library.md),
+> [executable](../new_to_cabal/06_first_cabal_executable.md),
+> [test-suite](../leveling_up/02_first_cabal_test_suite.md)
+
+Just like components, there are specific keys that enumerate to modules:
+`exposed-modules`, `other-modules`, `virtual-modules`, `test-module`, and even
+`main-is` which describes the entrypoint module for an executable. These fields
+are children of the top level component fields (mentioned above). The names
+listed here are used to communicate to cabal which modules belong within the
+context of a **component**. It is not necessary to commit these fields to
+memory, but it is good to be aware of them. Hopefully when you look at the
+layout of a `.cabal` file next, you will see the
+`package <- component <- module` hierarchy reflected in the nested fields!
 
 ## What is a package?
 
-While modules are the smallest unit of code in Cabal, a **package** is the
-smallest distributable unit. It is composed of modules, and can take the form of
-a **library** or an **executable**. A library makes its modules available for
-re-use, while an executable is a single program compiled down to binary that is
-meant to be run.
+If a module is the smallest unit of code in cabal, a **package** is the largest
+unit, and represents a distributable artefact that provides access to
+components. From cabal's perspective a **package** must at least contain one
+component, but it can provide many (even multiple of the same kind of
+component).
 
-From Cabal's perspective a **package** must at least be one executable or
-library, and can include several libraries and executables. A package can also
-be thought of as including its tests, although a packages tests are not made
-available to consumers in the same way that a library and executable are.
+The `.cabal` file represents a single package, and is really just a collection
+of metadata about the packages constituent parts. It defines the packages
+components and their internal dependencies (list of modules) as well as the
+packages external dependencies; usually other packages. External dependencies
+reside under the key `build-depends`, but there are also foreign (non-Haskell)
+dependencies too which live under `foreign-library`.
 
-A package is defined in the `.cabal` file, which is a collection of metadata
-about the package. In addition to metadata, the `.cabal` defines the packages
-internal dependency structure (the module graph) as well as its external
-dependencies; the other packages that this package depends on.
+To make things more concrete, here is a pseudo-Haskell type representing the
+package-component-module hierarchy:
+
+```haskell
+data Module = Module { moduleName :: Text, moduleEntities :: [Entities] }
+
+data ComponentType = Executable | Library | TestSuite
+
+data Component =
+  Component
+    { componentName    :: Text
+    , componentType    :: ComponentType
+    , componentModules :: [Module]
+    }
+
+type Package = [Component]
+```
+
+> Note: technically a package can contain no components, but if you try and run
+> `cabal build` you will get an error telling you that your package contains no
+> components.
 
 ## Summary
 
@@ -176,17 +226,19 @@ intend to distribute our project, we can still think of it as an unrealized
 package. This is important because, inherent in the definition of a package, are
 all of its dependencies. This is a very common use case for cabal; to bring a
 bunch of dependencies in to scope so that we can explore them and call them from
-our own practice projects. This exploratory workflow is facilitated by commands
-like `cabal repl`, and `cabal env` (which is being worked on currently).
+our own code (even if we don't intend to do anything with our code). This
+exploratory workflow is facilitated by commands like `cabal repl`, and
+`cabal env` (which is being worked on currently).
 
-Therefore it is informative to think of Cabal as handling several distinct
+Therefore it is informative to think of cabal as handling several distinct
 concerns:
 
-1. Describing the internal dependency structure of a project in terms of
-   modules.
-2. Managing the external dependencies (packages) of our project and bringing
-   them into scope so that we can access their exposed modules.
-3. Managing the building and distribution of our package.
+1. Describing the internal dependency structure of a project in terms of modules
+   and components.
+2. Managing the external dependencies of our project and allowing us to access
+   them from within our modules.
+3. Managing the building and distribution of our package, which is really just a
+   collection of components.
 
 I believe that the reader of this guide will get the most out of it if they
 consider which of these functions they are interested in preforming with Cabal.

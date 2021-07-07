@@ -3,7 +3,7 @@
 # Preamble
 
 - [What do we mean when we say cabal?](./preamble/01_what_do_we_mean_when_we_say_cabal.md)
-- [What is a module and a package?](./preamble/02_what_is_a_module_and_a_package.md)
+- [What is a module, a component, and a package?](./preamble/02_what_is_a_module_and_a_package.md)
 - [What is hackage?](./preamble/03_what_is_hackage.md)
 - [How to install software with cabal-install](./preamble/04_how_to_install_software_with_cabal-install.md)
 
