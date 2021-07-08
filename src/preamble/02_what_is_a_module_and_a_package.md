@@ -9,22 +9,21 @@ interested in reading more about the you can find a more thorough treatment
 
 The most significant concepts in this chapter all refer to ways of dividing and
 aggregating code. They form a hierarchy, and are somewhat defined in terms of
-each other. Here is a list of them in order from smallest to largest are:
+each other. Here is a list of them in order from smallest to largest:
 
 1. **Module** - The smallest unit of code defined by GHC and the Haskell
-   language specification.
-2. **Component** - A component is a collection of modules. Usually a `library`,
-   `executable`, or a `test-suite`.
+   language specification. A module always coincides with a filename and cabal
+   requires that the module name corresponds to the filename.
+2. **Component** - A component is a collection of modules. These can be a
+   `library`, `executable`, `test-suite`, and `benchmarks`.
 3. **Unit** - Units are compiled components, while not technically _larger_ than
-   a component, they are further along in the packaging process and therefore
-   closer to a distributable artefact.
-4. **Package** - A package is a collection of components. In the context of
-   cabal a package is identified by a `<package-name>.cabal` file. A package is
-   **the** unit of distribution in the Haskell ecosystem i.e. everything on
-   hackage is a package.
-5. **Project** - A project is a grouping of several related packages. In the
-   context of cabal this is denoted by a `cabal.project` file in the root
-   directory.
+   a component, they are further along in the packaging building process and
+   therefore closer to a distributable artefact.
+4. **Package** - A package is a collection of components, identified by a
+   `<package-name>.cabal` file. A package is **the** unit of distribution in the
+   Haskell ecosystem, everything on Hackage is a package.
+5. **Project** - A project is a grouping of several related packages, this is
+   denoted by a `cabal.project` file in the root directory.
 
 Units and projects are not covered in this chapter, although projects have their
 own [chapter](../getting_fancy/01_setting_up_a_cabal_project.md)
