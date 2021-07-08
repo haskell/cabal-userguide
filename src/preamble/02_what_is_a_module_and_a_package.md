@@ -4,7 +4,7 @@
 
 There is an ongoing initiative to standardize the terminology we use to refer to
 the hierarchy of collections of code in the Haskell community. If you are
-interested in reading more about the you can find a more thorough treatment
+interested in reading more about this you can find a more thorough treatment
 [here](https://gitlab.haskell.org/ghc/ghc/-/wikis/commentary/compiler/units#background).
 
 The most significant concepts in this chapter all refer to ways of dividing and
