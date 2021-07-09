@@ -15,18 +15,15 @@ each other. Here is a list of them in order from smallest to largest:
    language specification. A module always coincides with a filename and cabal
    requires that the module name corresponds to the filename.
 2. **Component** - A component is a collection of modules. These can be a
-   `library`, `executable`, `test-suite`, and `benchmarks`.
-3. **Unit** - Units are compiled components, while not technically _larger_ than
-   a component, they are further along in the packaging building process and
-   therefore closer to a distributable artefact.
-4. **Package** - A package is a collection of components, identified by a
+   `library`, `executable`, `test-suite`, and `benchmark`.
+3. **Package** - A package is a collection of components, identified by a
    `<package-name>.cabal` file. A package is **the** unit of distribution in the
    Haskell ecosystem, everything on Hackage is a package.
-5. **Project** - A project is a grouping of several related packages, this is
-   denoted by a `cabal.project` file in the root directory.
+4. **Project** - A project is a grouping of several related packages, denoted by
+   a `cabal.project` file in the root directory.
 
-Units and projects are not covered in this chapter, although projects have their
-own [chapter](../getting_fancy/01_setting_up_a_cabal_project.md)
+Projects are not covered here, but they do have their own
+[chapter](../getting_fancy/01_setting_up_a_cabal_project.md)
 
 ## What is a module?
 
@@ -43,10 +40,10 @@ three purposes:
 - Abstraction
 - Separate Compilation
 
-Haskell modules are very feature-full, here are some examples of how they can be
-used.
+Here are some examples of how modules can be used to control the entities they
+expose, and how import syntax can be used to control what is brought into scope.
 
-They can export all of their entities.
+Modules can export all of their entities.
 
 ```haskell
 module ExportAll where
@@ -127,10 +124,11 @@ manifest in Haskell.
 
 At its most basic, a module is a namespace for collecting language specific
 primitives. In Haskell these are types, functions, and typeclasses (referred to
-as entities). This is by far the most common use case in a Haskell application.
-Note namespaces are intended to prevent the collision of homophonous entities,
-but are often used to create semantic divisions in the structure of code that
-corresponds to some domain specific concept.
+as entities). This is by far the most common use case (as opposed to abstraction
+or trying to manipulate recompilation) in a Haskell application. Namespaces
+prevent the collision of homophonous entities, but regardless of collisions,
+they are often used to create semantic divisions in the structure of code
+(usually in a way that reflects domain specific concepts).
 
 It is good practice to make heavy use of namespaces; an 80 line file is much
 more approachable, and easy to take in at a glance, than a 1000 line file.
@@ -188,8 +186,8 @@ Module separation can also impact compile times. Each module keeps track of the
 fingerprint (A unique identifier, in new versions of GHC it is a hash of the
 contents of the file) of the modules it depends on. If you change a module that
 is depended upon by other modules, you will need to recompile everything
-downstream of your change. This means that very large modules, that are imported
-frequently, can trigger massive recompilations.
+downstream of your change. This means that modules, when imported frequently,
+can trigger a large chain of recompilations.
 
 ```
 
@@ -242,7 +240,7 @@ are a great resource.
 
 A crucial point to understand here is that `GHC` is responsible for this
 recompilation logic, and a modules capabilities are defined in the Haskell
-language specification. Why, as cabal users, is it important for us to
+language specification. Why is it important for us, as cabal users, to
 understand the module dependency graph, and how to use modules in general?
 
 The answer is two-fold:
@@ -254,11 +252,11 @@ The answer is two-fold:
 
 ## What is a Component?
 
-If modules are the construct that allow us to manage the internal dependencies
-of our project, then components are the first glimpse of the external.
-Components aggregate all of our internal dependencies to be exposed external,
-and components also declare all of the external packages that we depend on so
-that they can be made available as modules within our code.
+If a module is the construct for managing an internal dependency, then
+components are the construct for managing external dependencies. Components
+aggregate all of our internal dependencies to be exposed externally, and
+components also declare all of the external packages that we depend on so that
+they can be made available as modules within our code.
 
 When arranging components Cabal needs to be aware of all the modules that we
 would like to expose externally. Now _what_ we choose to expose is up to us.
@@ -270,29 +268,35 @@ nasty internal machinery which we would prefer to keep hidden, and only expose
 the clean external api. All of these use cases can be expressed using
 components.
 
-Components are represented by top level keys within a `.cabal` file. These are
-the kinds of components that you can define `library`, `executable`, and
-`test-suite`. A **library** exposes several modules which are intended to be
-used by other packages, an **executable** produces a compiled binary that can be
-executed, a **test suite** is a program that can be invoked like an executable
-but it generally just tests code that is internal to the package.
+Components are represented by top level declarations within a `.cabal` file.
+There are four keywords (corresponding to the four kinds of components);
+`library`, `executable`, `test-suite`, and `benchmark`. There can be multiple
+components of the same type declared in the same `.cabal` file. Components
+should all be given a name, except for libraries, which can be unnamed. A
+**library** exposes several modules which are intended to be used by other
+packages. An **executable** produces a compiled binary that can be executed. A
+**test suite** is a program that can be invoked like an executable but it
+generally just tests code that is internal to the package. A **benchmark** is
+used to measure the performance characteristics of another component.
 
 > Note: each of these components will receive individual treatment later on in
 > the guide. If you are interested to take a peek now you can find them here:
 > [library](../new_to_cabal/06_first_cabal_library.md),
 > [executable](../new_to_cabal/06_first_cabal_executable.md),
-> [test-suite](../leveling_up/02_first_cabal_test_suite.md)
+> [test-suite](../leveling_up/02_first_cabal_test_suite.md) >
+> [benchmark](../getting_fancy/05_profiling_and_benchmarking.md)
 
-There are specific keys that we use to enumerate modules within components:
-`exposed-modules`, `other-modules`, `virtual-modules`, `test-module`, and even
-`main-is` which describes the entrypoint module for an executable. These fields
-are children of the top level component fields (mentioned above).
+There are specific field names that we use to enumerate modules within
+components: `exposed-modules`, `other-modules`, `virtual-modules`,
+`test-module`, and even `main-is` which describes the entrypoint module for an
+executable. These fields are contained within the top level component
+declarations (mentioned above).
 
-External dependencies are declared at the component level, and reside under the
-key `build-depends` (a child of the various component fields). There are also
-foreign (non-Haskell) dependencies too which live under `foreign-library`, these
-are a bit anomalous in the sense that they are not associated with a single
-component, there is a separate
+External dependencies are also contained within a top level component
+declaration, under the `build-depends` label. There are also foreign
+(non-Haskell) dependencies, which live under the `foreign-library` field name.
+These are a bit anomalous in the sense that they are not associated with a
+single component, there is a separate
 [chapter](../getting_fancy/06_foreign_libraries.md) on them.
 
 It is not necessary to commit these fields to memory, but it is good to be aware
@@ -303,26 +307,32 @@ fields!
 ## What is a package?
 
 If a module is the smallest unit of code in cabal, a **package** is the largest
-unit of distribution. At its core, all a package is is a distributable artefact
+unit of distribution. At its core, a package is just a distributable artefact
 that provides access to components.
 
 > You might remember cabal projects from earlier, as being _upstream_ of
-> packages. Good catch, a **project** is bigger in the sense that it is a
-> grouping of packages, but it is not distinct in terms of the distribution of
-> code.
+> packages. Good catch, a **project** is bigger than a package in the sense that
+> it is a grouping of packages, but a project is not distributed; you will not
+> see a cabal project on Hackage.
 
 The `.cabal` file represents a single package, and is really just a collection
-of metadata about the packages constituent parts. It defines the packages
-components and their internal dependencies (list of modules) as well as the
-packages external dependencies; usually other packages.
+of metadata about the package's constituent parts. It defines the package's
+components, its internal dependency structure (list of modules), and the
+package's external dependencies; usually other packages.
 
 To make things more concrete, here is a pseudo-Haskell type representing the
 package-component-module hierarchy:
 
 ```haskell
-data Module = Module { moduleName :: Text, moduleEntities :: [Entities] }
+data Module =
+  Module
+    { moduleName :: Text
+    , moduleEntities :: [Entities]
+    , moduleExports :: [Entities]
+    , moduleModuleImports :: [Module]
+    }
 
-data ComponentType = Executable | Library | TestSuite
+data ComponentType = Executable | Library | TestSuite | Benchmark
 
 data Component =
   Component
@@ -335,8 +345,8 @@ type Package = [Component]
 ```
 
 > Note: technically a package can contain no components, but if you try and run
-> `cabal build` you will get an error telling you that your package contains no
-> components.
+> `cabal build` you will get a message suggesting that the omission may be
+> erroneous.
 
 ## Summary
 
@@ -345,8 +355,8 @@ intend to distribute our code, we can still think of it as an unrealized
 package. This is important because, inherent in the definition of a package, are
 all of its dependencies. This is a very common use case for cabal; to bring a
 bunch of dependencies in to scope so that we can explore them and call them from
-our own code (even if we don't intend to do anything with our code). This
-exploratory workflow is facilitated by commands like `cabal repl`, and
+our own code. This workflow, in which the code is not intended to be published
+(or even saved), is facilitated by commands like `cabal repl`, `cabal exec`, and
 `cabal env` (which is being worked on currently).
 
 Therefore it is informative to think of cabal as handling several distinct
