@@ -12,13 +12,16 @@ aggregating code. They form a hierarchy, and are somewhat defined in terms of
 each other. Here is a list of them in order from smallest to largest:
 
 1. **Module** - The smallest unit of code defined by GHC and the Haskell
-   language specification. A module always coincides with a filename and cabal
+   language specification. A module always coincides with a file and cabal
    requires that the module name corresponds to the filename.
 2. **Component** - A component is a collection of modules. These can be a
    `library`, `executable`, `test-suite`, and `benchmark`.
 3. **Package** - A package is a collection of components, identified by a
    `<package-name>.cabal` file. A package is **the** unit of distribution in the
-   Haskell ecosystem, everything on Hackage is a package.
+   Haskell ecosystem, everything on Hackage is a package. A potential point of
+   confusion is that there are such things as GHC packages, these are in fact
+   closer to compiled components (there is more information on this in the link
+   above).
 4. **Project** - A project is a grouping of several related packages, denoted by
    a `cabal.project` file in the root directory.
 
@@ -117,7 +120,7 @@ If you want to learn more about Haskell modules and their syntax, then the
 [haskell2010 report](https://www.haskell.org/onlinereport/haskell2010/haskellch5.html)
 is a good place to start.
 
-Alright, back to the three primary features of a module, lets look at they
+Alright, back to the three primary features of a module, lets look at how they
 manifest in Haskell.
 
 #### Namespace
@@ -176,9 +179,9 @@ mkPositiveDollar n
 > is fantastic
 
 Now a consumer of the `Money` module can only construct a `PositiveDollar` by
-calling `mkPositiveDollar`, which makes the possible values of `Int` smaller
-(i.e. none less than 0). The handling of negatives has been abstracted away from
-the end user!
+calling `mkPositiveDollar`, which ensures PositiveDollar can only ever be
+created from a non-negative `Int`. Handling negatives has been abstracted away
+from the end user!
 
 #### Separate Compilation
 
@@ -295,9 +298,10 @@ declarations (mentioned above).
 External dependencies are also contained within a top level component
 declaration, under the `build-depends` label. There are also foreign
 (non-Haskell) dependencies, which live under the `foreign-library` field name.
-These are a bit anomalous in the sense that they are not associated with a
-single component, there is a separate
-[chapter](../getting_fancy/06_foreign_libraries.md) on them.
+There are also `c-sources`, `extra-libraries`, `includes` and
+`install-includes`, but these are more advanced. These are a bit anomalous in
+the sense that they are not associated with a single component, there is a
+separate [chapter](../getting_fancy/06_foreign_libraries.md) on them.
 
 It is not necessary to commit these fields to memory, but it is good to be aware
 of them. Hopefully when you look at the layout of a `.cabal` file next, you will
