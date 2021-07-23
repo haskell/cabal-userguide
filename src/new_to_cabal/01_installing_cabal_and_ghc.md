@@ -2,13 +2,12 @@
 
 ## ghcup
 
-While most package managers have some support for installing at least ghc (and
-sometimes cabal) the suggested method these days is `ghcup`. You can find
-official installation instructions
-[here](https://github.com/haskell/ghcup-hs#installation). You should be able to
-run the curl command from https://www.haskell.org/ghcup/. Once you have ghcup
-installed you should be able to run commands via the tui `ghcup tui` or from the
-cli:
+While most package managers (notably [chocolatey](https://chocolatey.org/) for
+windows) have some support for installing at least ghc (and sometimes cabal) the
+suggested method these days is `ghcup`. You should be able to run the curl
+command from [here](https://www.haskell.org/ghcup/) which should install the
+ghcup toolchain. Once you have ghcup installed you should be able to run
+commands via the tui `ghcup tui` or from the cli:
 
 > Note: these commands are taken directly from the ghcup repo.
 
