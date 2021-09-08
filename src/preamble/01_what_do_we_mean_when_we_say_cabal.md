@@ -23,15 +23,14 @@ tool" (the cabal-install package which provides the cabal executable).
 ## The .cabal file
 
 The .cabal file contains information that drives the compilation and building of
-Haskell packages. Usually the .cabal file lives at the root directory that
-contains the haskell source code corresponding to the package. Usually this file
-is named as `<project-name>.cabal`. It is a text-based, key-value format, that
-is divided into subsections called stanzas.
+Haskell packages. The .cabal file lives at the root directory that contains the
+haskell source code corresponding to the package. By convention this file is
+named `<project-name>.cabal`. It is a text-based, key-value format, that is
+divided into subsections called stanzas.
 
 The package properties describe the package as a whole, such as name, license,
-author, dependenices, etc. It also contains optional information about optional
-components such as
-[library properties](../new_to_cabal/06_first_cabal_library.md),
+author, dependenices, etc. It also contains information about optional
+components such as [library](../new_to_cabal/06_first_cabal_library.md),
 [executables](../new_to_cabal/07_first_cabal_executable.md),
 [test-suite](../leveling_up/02_first_cabal_test-suite.md),
 [benchmark](src/leveling_up/03_first_cabal_benchmark.md). These components are
@@ -52,15 +51,20 @@ generally there is a configuration mechanism to customise many aspects of how a
 package is built depending on the Haskell implementation, the operating system,
 computer architecture and user-specified configuration flags.
 
+There are various
+[Haskell implementations](https://wiki.haskell.org/Implementations), but we have
+now pretty much all converged on [GHC](https://www.haskell.org/ghc/) as the
+standard Haskell implementation.
+
 ## The CABAL library
 
 Cabal stands for Common Architecture for Building Applications and Libraries.
 This is the library that provides functionality that allows the information in
-the .cabal files to be put to use. The Cabal library contains the
-implementations that allow for the parsing and operations based on the content
-of a .cabal file. Cabal the library, by convention, is written with
-Capitalization case. Cabal can take a haskell dependency graph (of external and
-internal modules) and use GHC to build it.
+the .cabal files to be put to use. The Cabal library contains the code for
+parsing .cabal files and operations for building haskell packages. Cabal the
+library, by convention, is written with Capitalization case. Cabal can take a
+haskell dependency graph (of external and internal modules) and use GHC to build
+it.
 
 ## The binary cabal-install (cli tool)
 
@@ -70,7 +74,7 @@ makes use of Cabal the library to do its job.
 
 cabal-install is a frontend to Cabal. It makes it possible to build Haskell
 projects whose sets of dependencies might conflict with each other within the
-confines of a single system. A package's .cabal file provides a constraints on
+confines of a single system. A package's .cabal file provides a constraint on
 the version of various libraries (version bounds) that they expect. When
 cabal-install is asked to build a project, by default it looks at the
 dependencies specified in its .cabal file and uses a dependency solver to figure
